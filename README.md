@@ -1,4 +1,4 @@
-# pfm_v2
+# Personal Finance Manager(pfm) version-2
 Personal Finance Manager v2.
 - Personal finance manager version 2 is the successor the project Personal finance manager
 
