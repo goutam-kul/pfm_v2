@@ -10,6 +10,7 @@ class User(Base):
     username = Column(String, nullable=False, unique=True)  
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
+    reset_token = Column(String, nullable=True) # For password reset
     expenses = relationship("Expense", back_populates="user")
     budgets = relationship("Budget", back_populates="user")
 
