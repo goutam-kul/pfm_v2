@@ -21,6 +21,10 @@ class LoginRequest(BaseModel):
     identifier: str
     password: str
 
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+
 # Forgot password
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
@@ -30,6 +34,7 @@ class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
 
+# ------------------------------------------------
 
 # 2. Expense Schema
 class ExpenseBase(BaseModel):
@@ -46,6 +51,8 @@ class ExpenseResponse(ExpenseBase):
 
     class Config:
         from_attributes = True
+
+#------------------------------------------------
 
 # 3. Budget Schema
 class BudgetBase(BaseModel):

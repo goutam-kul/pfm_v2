@@ -23,7 +23,12 @@ def create_user(db: Session, user: schemas.UserCreate, hashed_password: str):
 
 # Expense CRUD Operations
 def create_expense(db: Session, expense: schemas.ExpenseCreate, user_id: int):
-    db_expense = models.Expense(**expense.model_dump(), user_id=user_id)
+    db_expense = models.Expense(
+        user_id=user_id, # Fromt the logged in user
+        category=expense.category,
+        amount=expense.amount,
+        date=expense.date
+    )
     db.add(db_expense)
     db.commit()
     db.refresh(db_expense)
@@ -34,7 +39,12 @@ def get_expenses_by_user(db: Session, user_id: int):
 
 # Budget CRUD Operations
 def create_budget(db: Session, budget: schemas.BudgetCreate, user_id: int):
-    db_budget = models.Budget(**budget.model_dump(), user_id=user_id)
+    db_budget = models.Budget(
+        category=budget.category,
+        limit=budget.limit,
+        current_total=0.0,
+        user_id=user_id
+    )
     db.add(db_budget)
     db.commit()
     db.refresh(db_budget)

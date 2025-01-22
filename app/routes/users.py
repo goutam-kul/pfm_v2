@@ -5,6 +5,10 @@ from db.database import get_db
 from utils.password_utils import generate_password_hash, verify_password
 from utils.email_utils import send_reset_email
 import uuid
+from utils.auth import create_access_token
+from datetime import timedelta
+
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 # Expiration time for auth token
 
 router = APIRouter()
 
@@ -21,7 +25,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user, hashed_password=hashed_password)
 
 # 2. Login existing user
-@router.post("/login", response_model=schemas.UserResponse)
+@router.post("/login", response_model=schemas.LoginResponse)
 def login_user(request: schemas.LoginRequest, db: Session = Depends(get_db)):
     # Extract identifier and password from the request body
     identifier = request.identifier
@@ -36,7 +40,16 @@ def login_user(request: schemas.LoginRequest, db: Session = Depends(get_db)):
     if not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid Password")
     
-    return user
+    # Generate access token
+    access_token = create_access_token(
+        data={"user_id": user.id},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    # Return the token
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
 # 3. Forgot password email send 
 @router.post("/forgot-password")
