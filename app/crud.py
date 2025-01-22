@@ -43,14 +43,19 @@ def create_budget(db: Session, budget: schemas.BudgetCreate, user_id: int):
         category=budget.category,
         limit=budget.limit,
         current_total=0.0,
-        user_id=user_id
+        user_id=user_id,
+        month=budget.month
     )
     db.add(db_budget)
     db.commit()
     db.refresh(db_budget)
     return db_budget
 
-def get_budget_by_user(db: Session, user_id: int):
-    return db.query(models.Budget).filter(models.Budget.user_id == user_id).all()
+def get_budget_by_user(db: Session, user_id: int, month: str = None):
+    query = db.query(models.Budget).filter(models.Budget.user_id == user_id)
+    if month: 
+        query = query.filter(models.Budget.month == month)
+    return query.all()
+
 
     

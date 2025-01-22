@@ -32,3 +32,4 @@ class Budget(Base):
     current_total = Column(Float, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Foreign key to User
     user = relationship("User", back_populates="budgets")
+    month = Column(String, nullable=True)   # Format: "YYYY-MM"

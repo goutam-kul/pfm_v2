@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from typing import Dict
 from db.database import engine
 from app.models import Base
 from app.routes import users, expense, budgets
 from utils.scheduler import start_scheduler
+
 
 # Create the FastAPI app instance
 app = FastAPI(title="Personal Finance Manager v2")
@@ -20,6 +24,25 @@ app.include_router(budgets.router, prefix="/budgets", tags=["budgets"])
 @app.get("/")
 def read_root():
     return {"message": "Yo Koso! Watshi no Soul Society Ae"}
+
+
+@app.exception_handler(RequestValidationError)
+def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    parsed_errors = []
+
+    for error in errors:
+        parsed_errors.append({
+            "field": error["loc"][-1],  # Get the field name
+            "message": error["msg"],
+            "value": error.get("input", None)
+        })
+    return JSONResponse(
+        status_code=422, 
+        content={
+            "error": parsed_errors  # Return all the parsed error
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn
