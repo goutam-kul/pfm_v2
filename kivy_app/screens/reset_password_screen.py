@@ -1,9 +1,19 @@
-from kivy.uix.screenmanager import Screen
+from kivymd.uix.screen import MDScreen
+from kivy_app.utils import DialogMixin
 from kivy.clock import Clock
 import requests
 
-class ResetPasswordScreen(Screen):
-    def reset_password(self, otp, new_password):
+class ResetPasswordScreen(MDScreen, DialogMixin):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.dialog = None  # Initialize the dialog attribute
+
+    def reset_password(self, otp, new_password, confirm_password):
+        # Validate that passwords match
+        if new_password != confirm_password:
+            self.show_message("Error", "Passwords do not match.")
+            return
+
         url = "http://127.0.0.1:6000/users/reset-password"  # Replace with your actual endpoint
         payload = {
             "otp": otp.strip(),
@@ -12,16 +22,16 @@ class ResetPasswordScreen(Screen):
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
-                self.ids.status_label.text = "Password reset successful! Redirecting to log in..."
-                # CHedule redirection to the login screen after 5 seconds 
+                self.show_message("Success", "Password reset successful! Redirecting to log in...")
+                # Schedule redirection to the login screen after 5 seconds
                 Clock.schedule_once(self.redirect_to_login, 5)
 
             elif response.status_code == 400:
-                self.ids.status_label.text = "Error: OTP incorrect or expired."
+                self.show_message("Error", "OTP incorrect or expired.")
             else:
-                self.ids.status_label.text = "Error: Unable to reset password."
+                self.show_message("Error", "Unable to reset password.")
         except Exception as e:
-            self.ids.status_label.text = f"Error: {str(e)}"
+            self.show_message("Network Error", f"Error: {str(e)}")
 
     def redirect_to_login(self, dt):
         self.manager.current = "home"

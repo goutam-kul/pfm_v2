@@ -1,0 +1,121 @@
+#:kivy 2.3.1
+<DashboardScreen>:
+    name: "dashboard"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 30
+        padding: [20, 50, 20, 20]
+
+        MDLabel:
+            text: "Welcome to Finance Manager"
+            font_style: "H4"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: [0.2, 0.6, 0.8, 1]
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            spacing: 30
+            size_hint: None, None
+            size: dp(600), dp(250)
+            pos_hint: {"center_x": 0.5}
+
+            # Expenses Card
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: dp(160), dp(180)
+                elevation: 8
+                radius: [20,]
+                md_bg_color: [0.9, 0.95, 1, 1]  # Light blue background
+                shadow_softness: 3
+                shadow_offset: (2, 2)
+
+                MDIconButton:
+                    icon: "wallet-outline"  # Wallet icon for Expenses
+                    user_font_size: "60sp"
+                    pos_hint: {"center_x": 0.5}
+                    theme_text_color: "Custom"
+                    text_color: [0.2, 0.6, 0.8, 1]
+
+                MDLabel:
+                    text: "Expenses"
+                    halign: "center"
+                    font_style: "Subtitle1"
+                    theme_text_color: "Primary"
+
+                MDRaisedButton:
+                    text: "Expenses"
+                    size_hint: 0.8, None
+                    height: dp(40)
+                    pos_hint: {"center_x": 0.5}
+                    md_bg_color: [0.2, 0.6, 0.8, 1]
+                    text_color: [1, 1, 1, 1]
+                    on_release: app.root.current = "expense_main"
+
+            # Budgets Card
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: dp(160), dp(180)
+                elevation: 8
+                radius: [20,]
+                md_bg_color: [1, 0.95, 0.9, 1]  # Light orange background
+                shadow_softness: 3
+                shadow_offset: (2, 2)
+
+                MDIconButton:
+                    icon: "chart-pie"  # Pie chart icon for Budgets
+                    user_font_size: "60sp"
+                    pos_hint: {"center_x": 0.5}
+                    theme_text_color: "Custom"
+                    text_color: [0.9, 0.6, 0.2, 1]
+
+                MDLabel:
+                    text: "Budgets"
+                    halign: "center"
+                    font_style: "Subtitle1"
+                    theme_text_color: "Primary"
+
+                MDRaisedButton:
+                    text: "Budgets"
+                    size_hint: 0.8, None
+                    height: dp(40)
+                    pos_hint: {"center_x": 0.5}
+                    md_bg_color: [0.9, 0.6, 0.2, 1]
+                    text_color: [1, 1, 1, 1]
+                    on_release: app.root.current = "budgets"
+
+            # Logout Card
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: dp(160), dp(180)
+                elevation: 8
+                radius: [20,]
+                md_bg_color: [0.9, 1, 0.9, 1]  # Light green background
+                shadow_softness: 3
+                shadow_offset: (2, 2)
+
+                MDIconButton:
+                    icon: "logout"  # Logout icon
+                    user_font_size: "60sp"
+                    pos_hint: {"center_x": 0.5}
+                    theme_text_color: "Custom"
+                    text_color: [0.2, 0.8, 0.2, 1]
+
+                MDLabel:
+                    text: "Logout"
+                    halign: "center"
+                    font_style: "Subtitle1"
+                    theme_text_color: "Primary"
+
+                MDRaisedButton:
+                    text: "Logout"
+                    size_hint: 0.8, None
+                    height: dp(40)
+                    pos_hint: {"center_x": 0.5}
+                    md_bg_color: [0.2, 0.8, 0.2, 1]
+                    text_color: [1, 1, 1, 1]
+                    on_release: app.root.get_screen("home").logout_user()

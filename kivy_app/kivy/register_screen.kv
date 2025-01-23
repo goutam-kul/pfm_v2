@@ -1,0 +1,76 @@
+#:kivy 2.3.1
+
+<RegisterScreen>:
+    name: "register"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 20
+        padding: [20, 50, 20, 20]
+
+        MDLabel:
+            text: "Register"
+            font_style: "H4"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: [0.2, 0.6, 0.8, 1]
+
+        MDTextField:
+            id: username
+            hint_text: "Enter Username"
+            helper_text: "Choose a unique username"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDTextField:
+            id: email
+            hint_text: "Enter Email"
+            helper_text: "Enter a valid email address"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDTextField:
+            id: password
+            hint_text: "Password"
+            password: True
+            helper_text: "Choose a strong password"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDTextField:
+            id: confirm_password
+            hint_text: "Confirm Password"
+            password: True
+            helper_text: "Re-enter your password"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDLabel:
+            id: status_label
+            text: ""
+            halign: "center"
+            theme_text_color: "Error"
+
+        MDRaisedButton:
+            text: "Register"
+            pos_hint: {"center_x": 0.5}
+            md_bg_color: [0.2, 0.6, 0.8, 1]
+            on_release: 
+                root.register_user(
+                root.ids.username.text,
+                root.ids.email.text,
+                root.ids.password.text,
+                root.ids.confirm_password.text
+                )
+
+
+        MDFlatButton:
+            text: "Back to Login"
+            pos_hint: {"center_x": 0.5}
+            theme_text_color: "Custom"
+            text_color: [0.2, 0.6, 0.8, 1]
+            on_release: app.root.current = "home"
