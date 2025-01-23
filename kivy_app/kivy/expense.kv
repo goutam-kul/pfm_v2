@@ -1,0 +1,46 @@
+#:kivy 2.3.1
+
+<ExpenseScreen>:
+    name: "expenses"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 20
+
+        Label:
+            text: "Add Expense"
+            font_size: 24
+
+        TextInput:
+            id: category_input
+            hint_text: "Category (e.g., Food, Rent, Entertainment)"
+        
+        TextInput:
+            id: amount_input
+            hint_text: "Amount"
+            input_filter: "float"
+        
+        TextInput:
+            id: date_input
+            hint_text: "Date (YYYY-MM-DD)"
+        
+        Button:
+            text: "Add Expense"
+            on_release:
+                root.add_expense(
+                root.ids.category_input.text,
+                root.ids.amount_input.text,
+                root.ids.date_input.text
+                )
+        Button:
+            text: "View Expenses"
+            on_release: root.view_expenses()
+
+        Button:
+            text: "Back to dashboard"
+            on_release: app.root.current = "dashboard"
+
+        Label:
+            id: status_label
+            text: ""
+            color: 1, 0, 0, 1  # Red for error messages

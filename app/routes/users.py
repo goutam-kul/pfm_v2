@@ -1,3 +1,5 @@
+import random
+import string
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import crud, schemas
@@ -6,7 +8,8 @@ from utils.password_utils import generate_password_hash, verify_password
 from utils.email_utils import send_reset_email
 import uuid
 from utils.auth import create_access_token
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
+
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 # Expiration time for auth token
 
@@ -60,32 +63,43 @@ async def forgot_password(request: schemas.ForgotPasswordRequest, db: Session = 
     if not user:
         raise HTTPException(status_code=404, detail="Email not registered")
     
-    # Generate a secure reset token
-    reset_token = str(uuid.uuid4())
-    user.reset_token = reset_token  # Store token in the database
+    # # Generate a secure reset token
+    # reset_token = str(uuid.uuid4())
+    # user.reset_token = reset_token  # Store token in the database
+    # db.commit()
+
+    # # Generate reset link
+    # reset_link = f"http://yourdomain.com/reset-password?token={reset_token}"
+
+    # Generate a 6-digit OTP
+    otp = ''.join(random.choices(string.digits, k=6))
+    otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10) # OTP expires in 10 minutes
+
+    # Store OTP and expiry in database
+    user.reset_otp = otp
+    user.otp_expiry = otp_expiry
     db.commit()
+    email_subject = "Your Password Reset OTP"
+    email_body = f"Your OTP for password reset is {otp}. It will expire in 10 minutes."
+    await send_reset_email(to_email=email, email_body=email_body, email_subject=email_subject)
 
-    # Generate reset link
-    reset_link = f"http://yourdomain.com/reset-password?token={reset_token}"
-
-    await send_reset_email(to_email=email, reset_link=reset_link)
-
-    return {"message": "A password reset link has been sent to your email."}
+    return {"message": "An OTP has been sent to your email."}
 
 # 4. Reset password
 @router.post("/reset-password")
 def reset_password(request: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
     # Extract token and new password from the request
-    token = request.token
+    # token = request.token
+    otp = request.otp
     new_password = request.new_password
 
     # Verify token and fetch user
-    user = crud.get_user_by_token(db=db, token=request.token)
+    user = crud.get_user_by_otp(db=db, otp=otp)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid or expired token.")
     
     # Hash the new password
-    hashed_password = generate_password_hash(request.new_password)
+    hashed_password = generate_password_hash(new_password)
     # Update the user's password in the database
     user.hashed_password = hashed_password
     db.commit()

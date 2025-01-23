@@ -1,0 +1,38 @@
+#:kivy 2.3.1
+
+<HomeScreen>:
+    name: "home"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 20
+
+        Label:
+            text: "Welcome to Personal Finance Manager"
+            font_size: 24
+
+        TextInput:
+            id: identifier
+            hint_text: "Username or email"
+
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True
+
+        Button:
+            text: "Login"
+            on_release: root.login_user(identifier.text, password.text)
+
+        Button:
+            text: "Register"
+            on_release: app.root.current = "register_user"
+
+        Button:
+            text: "Forgot Password"
+            on_release: app.root.current = "forgot_password"
+
+        Label:
+            id: status_label
+            text: ""
+            color: 1, 0, 0, 1  # Red for error messages
