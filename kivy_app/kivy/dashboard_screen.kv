@@ -1,121 +1,100 @@
 #:kivy 2.3.1
+
 <DashboardScreen>:
     name: "dashboard"
 
     MDBoxLayout:
         orientation: "vertical"
-        spacing: 30
-        padding: [20, 50, 20, 20]
+        spacing: dp(20)
+        padding: dp(20)
+        md_bg_color: [0.1, 0.1, 0.1, 1]  # Dark background for the dashboard
 
         MDLabel:
             text: "Welcome to Finance Manager"
             font_style: "H4"
             halign: "center"
             theme_text_color: "Custom"
-            text_color: [0.2, 0.6, 0.8, 1]
+            text_color: [1, 1, 1, 1]  # White text for visibility
 
-        MDBoxLayout:
-            orientation: "horizontal"
-            spacing: 30
-            size_hint: None, None
-            size: dp(600), dp(250)
-            pos_hint: {"center_x": 0.5}
+        ScrollView:
+            MDBoxLayout:
+                orientation: "horizontal"
+                spacing: dp(15)
+                size_hint_y: None
+                height: dp(200)
+                padding: dp(10)
 
-            # Expenses Card
-            MDCard:
-                orientation: "vertical"
-                size_hint: None, None
-                size: dp(160), dp(180)
-                elevation: 8
-                radius: [20,]
-                md_bg_color: [0.9, 0.95, 1, 1]  # Light blue background
-                shadow_softness: 3
-                shadow_offset: (2, 2)
+                # Expenses Card
+                MDCard:
+                    orientation: "vertical"
+                    size_hint: None, None
+                    size: dp(200), dp(180)
+                    elevation: 8
+                    radius: [15,]
+                    md_bg_color: [0.15, 0.15, 0.3, 1]  # Dark blue background
+                    ripple_behavior: True
+                    on_release: app.root.current = "expense_main"  # Correct screen for Expenses
 
-                MDIconButton:
-                    icon: "wallet-outline"  # Wallet icon for Expenses
-                    user_font_size: "60sp"
-                    pos_hint: {"center_x": 0.5}
-                    theme_text_color: "Custom"
-                    text_color: [0.2, 0.6, 0.8, 1]
+                    MDIcon:
+                        icon: "wallet-outline"
+                        halign: "center"
+                        font_size: "64sp"
+                        theme_text_color: "Custom"
+                        text_color: [0.4, 0.7, 1, 1]  # Light blue icon
 
-                MDLabel:
-                    text: "Expenses"
-                    halign: "center"
-                    font_style: "Subtitle1"
-                    theme_text_color: "Primary"
+                    MDLabel:
+                        text: "Expenses"
+                        halign: "center"
+                        font_style: "H6"
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]
 
-                MDRaisedButton:
-                    text: "Expenses"
-                    size_hint: 0.8, None
-                    height: dp(40)
-                    pos_hint: {"center_x": 0.5}
-                    md_bg_color: [0.2, 0.6, 0.8, 1]
-                    text_color: [1, 1, 1, 1]
-                    on_release: app.root.current = "expense_main"
+                # Budgets Card
+                MDCard:
+                    orientation: "vertical"
+                    size_hint: None, None
+                    size: dp(200), dp(180)
+                    elevation: 8
+                    radius: [15,]
+                    md_bg_color: [0.2, 0.15, 0.2, 1]  # Dark purple background
+                    ripple_behavior: True
+                    on_release: app.root.current = "view_budgets"  # Correct screen for Budgets
 
-            # Budgets Card
-            MDCard:
-                orientation: "vertical"
-                size_hint: None, None
-                size: dp(160), dp(180)
-                elevation: 8
-                radius: [20,]
-                md_bg_color: [1, 0.95, 0.9, 1]  # Light orange background
-                shadow_softness: 3
-                shadow_offset: (2, 2)
+                    MDIcon:
+                        icon: "chart-pie"
+                        halign: "center"
+                        font_size: "64sp"
+                        theme_text_color: "Custom"
+                        text_color: [0.8, 0.6, 1, 1]  # Lavender icon
 
-                MDIconButton:
-                    icon: "chart-pie"  # Pie chart icon for Budgets
-                    user_font_size: "60sp"
-                    pos_hint: {"center_x": 0.5}
-                    theme_text_color: "Custom"
-                    text_color: [0.9, 0.6, 0.2, 1]
+                    MDLabel:
+                        text: "Budgets"
+                        halign: "center"
+                        font_style: "H6"
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]
 
-                MDLabel:
-                    text: "Budgets"
-                    halign: "center"
-                    font_style: "Subtitle1"
-                    theme_text_color: "Primary"
-
-                MDRaisedButton:
-                    text: "Budgets"
-                    size_hint: 0.8, None
-                    height: dp(40)
-                    pos_hint: {"center_x": 0.5}
-                    md_bg_color: [0.9, 0.6, 0.2, 1]
-                    text_color: [1, 1, 1, 1]
-                    on_release: app.root.current = "budgets"
-
-            # Logout Card
-            MDCard:
-                orientation: "vertical"
-                size_hint: None, None
-                size: dp(160), dp(180)
-                elevation: 8
-                radius: [20,]
-                md_bg_color: [0.9, 1, 0.9, 1]  # Light green background
-                shadow_softness: 3
-                shadow_offset: (2, 2)
-
-                MDIconButton:
-                    icon: "logout"  # Logout icon
-                    user_font_size: "60sp"
-                    pos_hint: {"center_x": 0.5}
-                    theme_text_color: "Custom"
-                    text_color: [0.2, 0.8, 0.2, 1]
-
-                MDLabel:
-                    text: "Logout"
-                    halign: "center"
-                    font_style: "Subtitle1"
-                    theme_text_color: "Primary"
-
-                MDRaisedButton:
-                    text: "Logout"
-                    size_hint: 0.8, None
-                    height: dp(40)
-                    pos_hint: {"center_x": 0.5}
-                    md_bg_color: [0.2, 0.8, 0.2, 1]
-                    text_color: [1, 1, 1, 1]
+                # Logout Card
+                MDCard:
+                    orientation: "vertical"
+                    size_hint: None, None
+                    size: dp(200), dp(180)
+                    elevation: 8
+                    radius: [15,]
+                    md_bg_color: [0.25, 0.1, 0.1, 1]  # Dark red background
+                    ripple_behavior: True
                     on_release: app.root.get_screen("home").logout_user()
+
+                    MDIcon:
+                        icon: "logout"
+                        halign: "center"
+                        font_size: "64sp"
+                        theme_text_color: "Custom"
+                        text_color: [1, 0.4, 0.4, 1]  # Light red icon
+
+                    MDLabel:
+                        text: "Logout"
+                        halign: "center"
+                        font_style: "H6"
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]

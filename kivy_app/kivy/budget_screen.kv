@@ -1,0 +1,64 @@
+#:kivy 2.3.1
+
+<ViewBudgetScreen>:
+    name: "view_budgets"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(20)
+        padding: dp(20)
+
+        MDLabel:
+            text: "Your Budgets"
+            halign: "center"
+            font_style: "H4"
+
+        ScrollView:
+            do_scroll_x: False  # Disable horizontal scrolling
+            GridLayout:
+                id: budget_container
+                cols: 3  # 3 cards per row
+                spacing: dp(10)
+                padding: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+
+        MDRaisedButton:
+            text: "Go Back"
+            pos_hint: {"center_x": 0.5}
+            on_release: app.root.current = "dashboard"
+
+
+<UpdateBudgetScreen>:
+    name: "update_budget"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(20)
+        padding: dp(20)
+
+        MDLabel:
+            text: "Update Budget"
+            halign: "center"
+            font_style: "H5"
+
+        MDTextField:
+            id: category_input
+            hint_text: "Category"
+            disabled: True  # Disable editing for category
+
+        MDTextField:
+            id: limit_input
+            hint_text: "New Limit"
+            input_filter: "float"
+
+        MDRaisedButton:
+            text: "Submit"
+            pos_hint: {"center_x": 0.5}
+            on_release: root.update_budget(category_input.text, limit_input.text)
+
+        MDRaisedButton:
+            text: "Cancel"
+            pos_hint: {"center_x": 0.5}
+            on_release: app.root.current = "view_budgets"
+
+
+

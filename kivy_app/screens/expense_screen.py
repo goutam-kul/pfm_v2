@@ -2,6 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.datatables import MDDataTable
 from kivy.metrics import dp
 from kivy_app.utils import DialogMixin
+from kivymd.uix.pickers import MDDatePicker
 import requests
 
 
@@ -13,6 +14,21 @@ class AddExpenseScreen(MDScreen, DialogMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = None
+        self.selected_date = None
+
+    def show_date_picker(self):
+        # Initialize the date picker with a valid callback
+        date_picker = MDDatePicker()
+        date_picker.bind(on_save=self.set_date)
+        date_picker.open()
+
+    def set_date(self, instance, value, date_range):
+        """Callback for date picker. Updates the selected date field."""
+        self.selected_date = str(value)
+        if self.ids.date_input:  # Ensure the widget exists
+            self.ids.date_input.text = self.selected_date
+        else:
+            print("Error: date_input not found!")
 
     def add_expense(self, category, amount, date):
         url = "http://127.0.0.1:6000/expenses/"
@@ -27,6 +43,7 @@ class AddExpenseScreen(MDScreen, DialogMixin):
         try:
             response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
+                self.show_message("Success", "Expense added successfully!")
                 self.manager.current = "expense_main"
             else:
                 self.show_message("Error", "Expense addition failed succesfully.")
@@ -83,3 +100,7 @@ class ViewExpensesScreen(MDScreen, DialogMixin):
     def on_enter(self):
         # Populate the table when the screen is entered
         self.populate_table()
+
+    def on_leave(self):
+        # Clear table data when the scren is exited
+        self.expense_table.row_data = []

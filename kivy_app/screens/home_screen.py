@@ -10,7 +10,7 @@ class HomeScreen(MDScreen, DialogMixin):
         
     def login_user(self, identifier, password):
         url = "http://127.0.0.1:6000/users/login"
-        payload = {"identifier": identifier, "password": password}
+        payload = {"identifier": identifier.strip(), "password": password.strip()}
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:

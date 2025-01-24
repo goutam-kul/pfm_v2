@@ -1,6 +1,6 @@
 import random
 import string
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import crud, schemas
 from db.database import get_db
@@ -15,11 +15,25 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30 # Expiration time for auth token
 
 router = APIRouter()
 
+def validate_password_strength(password: str):
+    if len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters long."
+        )
+
 # 1. Register a new User
 @router.post("/register", response_model=schemas.UserResponse)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Validate password strength
+    validate_password_strength(user.password)
+
+    # Check if the email or usename is already registered. 
     if crud.get_user_by_email(db=db, email=user.email) or crud.get_user_by_username(db=db, username=user.username):
-        raise HTTPException(status_code=400, detail="Error 400: Email or Username is already registered.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error 400: Email or Username is already registered."
+        )
     
     # Hash the password
     hashed_password = generate_password_hash(user.password)
@@ -37,11 +51,16 @@ def login_user(request: schemas.LoginRequest, db: Session = Depends(get_db)):
     # Search user by email and username
     user = crud.get_user_by_email(db=db, email=identifier) or crud.get_user_by_username(db=db, username=identifier)
     if not user:
-        raise HTTPException(status_code=404, detail="Error: User Not Found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Error: User Not Found"
+        )
     
     # Verify password
     if not verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid Password")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Invalid Password")
     
     # Generate access token
     access_token = create_access_token(
@@ -61,7 +80,10 @@ async def forgot_password(request: schemas.ForgotPasswordRequest, db: Session = 
     # Check if the email exists
     user = crud.get_user_by_email(db, email)
     if not user:
-        raise HTTPException(status_code=404, detail="Email not registered")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Email not registered"
+        )
     
     # # Generate a secure reset token
     # reset_token = str(uuid.uuid4())
@@ -93,10 +115,16 @@ def reset_password(request: schemas.ResetPasswordRequest, db: Session = Depends(
     otp = request.otp
     new_password = request.new_password
 
-    # Verify token and fetch user
+    # Validate new password
+    validate_password_strength(new_password)
+
+    # Verify OTP and fetch user
     user = crud.get_user_by_otp(db=db, otp=otp)
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid or expired token.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired token."
+        )
     
     # Hash the new password
     hashed_password = generate_password_hash(new_password)

@@ -22,7 +22,9 @@ class RegisterScreen(MDScreen, DialogMixin):
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
-                self.show_message("Success", "Registration successful! Please log in.")
+                self.show_message("Success", "Registration successful! Please log in..")
+                self.manager.current = "home"
+
             else:
                 error_detail = response.json().get("detail", "Unknown error")
                 self.show_message("Error", f"Registration failed: {error_detail}")

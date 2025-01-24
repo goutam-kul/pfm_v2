@@ -61,7 +61,7 @@ def update_budget(
         .first()
     )
     if not budget:
-        raise HTTPException(status_code=404, detail="Budget not found for the specified category and month.")
+        raise HTTPException(status_code=404, detail="Budget not found for the specified category or month.")
 
     # Update the budget limit
     warning = None
