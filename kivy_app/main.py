@@ -9,7 +9,7 @@ from kivy_app.screens.expense_screen import (
     ViewExpensesScreen
 )
 from kivy_app.screens.budget_screen import (
-    # AddBudgetScreen,
+    AddBudgetScreen,
     ViewBudgetScreen,
     UpdateBudgetScreen
 )
@@ -44,7 +44,7 @@ class FinanceManagerApp(MDApp):
         sm.add_widget(AddExpenseScreen(name="add_expense"))
         sm.add_widget(ViewExpensesScreen(name="view_expenses"))
         # Budget screens
-        # sm.add_widget(AddBudgetScreen(name="add_budget"))
+        sm.add_widget(AddBudgetScreen(name="add_budget"))
         sm.add_widget(ViewBudgetScreen(name="view_budgets"))
         sm.add_widget(UpdateBudgetScreen(name="update_budget"))
         return sm

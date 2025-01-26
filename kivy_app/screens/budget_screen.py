@@ -1,12 +1,57 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.label import MDLabel
+from kivymd.uix.pickers import MDDatePicker
 from kivymd.uix.progressbar import MDProgressBar
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivy.utils import get_color_from_hex
 from kivy.app import App
 import requests
 from kivy_app.utils import DialogMixin
+
+class AddBudgetScreen(MDScreen, DialogMixin):
+    selected_month = None  # Store the selected month as formatter string (YYYY-MM)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def show_calendar(self):
+        # Open the calendar
+        calendar = MDDatePicker()
+        calendar.bind(on_save=self.on_month_selected, on_cancel=self.on_calendar_cancel)
+        calendar.open()
+
+    def on_month_selected(self, instance, value, date_range):
+        # Format the selected date to YYYY-MM
+        self.selected_month = value.strftime("%Y-%m")
+        self.ids.month_input.text = self.selected_month
+
+    def on_calendar_cancel(self, instance, value):
+        self.selected_month = None
+
+    def add_budget(self, category, limit):
+        url = "http://127.0.0.1:6000/budgets/"
+        payload = {
+            "category": category.strip(),
+            "limit": float(limit),
+        }
+
+        # Add month only if provided
+        if self.selected_month:
+            payload["month"] = self.selected_month
+        headers = {"Authorization": f"Bearer {self.manager.access_token}"}
+        
+        try:
+            response = requests.post(url=url, headers=headers, json=payload)
+            if response.status_code == 200:
+                self.show_message("Success", "New budget added!")
+                self.manager.current = "view_budgets"
+            else:
+                error_detail = response.json().get("detail", "Failed to add budget")
+                self.show_message(f"Error {response.status_code}", f"Error: {error_detail}")
+        except Exception as e:
+            self.show_message("Network Error", f"{str(e)}")
+
 
 class ViewBudgetScreen(MDScreen, DialogMixin):
     def __init__(self, *args, **kwargs):
@@ -32,6 +77,28 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
         container = self.ids.budget_container
         container.clear_widgets()
 
+        # Add the "Add Budget" card 
+        add_budget_card = MDCard(
+            orientation="vertical",
+            padding="12dp",
+            size_hint=(None, None),
+            size=("280dp", "180dp"),
+            md_bg_color=get_color_from_hex("#E0F7FA"),  # Soft pastel color
+            on_release=self.go_to_add_budget
+        )
+        add_budget_card.add_widget(MDIconButton(
+            icon="plus",
+            user_font_size="48sp",
+            pos_hint={"center_x": 0.5}
+        ))
+        add_budget_card.add_widget(MDLabel(
+            text="Add Budget",
+            font_style="H6",
+            halign="center",
+            theme_text_color="Primary"
+        ))
+        container.add_widget(add_budget_card)
+
         for budget in budgets:
             card = BudgetCard(
                 category=budget["category"],
@@ -40,6 +107,9 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
                 month=budget["month"]
             )
             container.add_widget(card)
+
+    def go_to_add_budget(self, *args):
+        self.manager.current = "add_budget"
 
 
 class UpdateBudgetScreen(MDScreen, DialogMixin):
@@ -53,17 +123,35 @@ class UpdateBudgetScreen(MDScreen, DialogMixin):
             "new_limit": float(new_limit)
         }
         headers = {"Authorization": f"Bearer {self.manager.access_token}"}
-        
-        try: 
-            respone = requests.put(url=url, headers=headers, json=payload)
-            if respone.status_code == 200:
-                self.show_message("Suceess", "Budget Updated successfully.")
+
+        try:
+            response = requests.put(url=url, headers=headers, json=payload)
+
+            if response.status_code == 200:
+                response_data = response.json()
+                # print("API Response:", response_data)  # Debugging
+
+                # Extract warning and success message
+                warning = response_data.get("warning")
+                success_message = response_data.get("message", "Budget updated successfully.")
+
+                # Show warning first, if present
+                if warning:
+                    self.show_message("Warning", warning)
+
+                # Show success message after warning
+                self.show_message("Success", success_message)
                 self.manager.current = "view_budgets"
+
             else:
-                error_detail = respone.json().get('detail', "Budget not found")
+                # Handle API errors
+                error_detail = response.json().get('detail', "Budget not found")
                 self.show_message("Error", f"Error: {error_detail}")
+
         except Exception as e:
+            # Handle unexpected errors
             self.show_message("Network Error", f"{str(e)}")
+
 
 
 class BudgetCard(MDCard):
