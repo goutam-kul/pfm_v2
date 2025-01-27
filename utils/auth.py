@@ -34,7 +34,7 @@ def get_current_user_id(token: str = Depends(oauth2_scheme)) -> int:
         # Extract user_id from the payload
         user_id: int = payload.get("user_id")
         if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token playload")
+            raise HTTPException(status_code=401, detail="Invalid token payload")
         
         # Check if token has expired
         exp = payload.get("exp")

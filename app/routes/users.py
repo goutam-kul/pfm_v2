@@ -1,13 +1,13 @@
 import random
 import string
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from app import crud, schemas
 from db.database import get_db
 from utils.password_utils import generate_password_hash, verify_password
 from utils.email_utils import send_reset_email
 import uuid
-from utils.auth import create_access_token
+from utils.auth import create_access_token, get_current_user_id
 from datetime import timedelta, datetime, timezone
 
 
@@ -133,3 +133,21 @@ def reset_password(request: schemas.ResetPasswordRequest, db: Session = Depends(
     db.commit()
 
     return {"message": "Your password has been reset successfully."}
+
+
+@router.get("/user_id")
+def get_user_id(
+    authorization: str = Header(...),  # Extract the Authorization header
+    db: Session = Depends(get_db)
+):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=400, detail="Invalid token format")
+    
+    # Extrac the token from the header
+    access_token = authorization.split(" ")[1]
+
+    user_id = get_current_user_id(access_token)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    return {"user_id": user_id}

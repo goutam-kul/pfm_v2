@@ -74,6 +74,31 @@
                         theme_text_color: "Custom"
                         text_color: [1, 1, 1, 1]
 
+                # Dashboard Card
+                MDCard:
+                    orientation: "vertical"
+                    size_hint: None, None
+                    size: dp(200), dp(180)
+                    elevation: 8
+                    radius: [15,]
+                    md_bg_color: [0.25, 0.1, 0.1, 1]  # Dark red background
+                    ripple_behavior: True
+                    on_release: root.open_streamlit_dashboard()
+
+                    MDIcon:
+                        icon: "view-dashboard"  # Change this to the desired icon
+                        halign: "center"
+                        font_size: "64sp"
+                        theme_text_color: "Custom"
+                        text_color: [1, 0.8, 0.4, 1]  # Gold color
+
+                    MDLabel:
+                        text: "Visit Your Dashboard"
+                        halign: "center"
+                        font_style: "H6"
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]
+
                 # Logout Card
                 MDCard:
                     orientation: "vertical"
