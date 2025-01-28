@@ -50,6 +50,16 @@ class AddExpenseScreen(MDScreen, DialogMixin):
         except Exception as e:
             self.show_message("Network Error", f"Error: {str(e)}")
 
+    def on_leave(self):
+        self.clear_expense_fields()
+        self.manager.current = "expense_main"
+
+    def clear_expense_fields(self):
+        self.ids.category_input.text = ""
+        self.ids.amount_input.text = ""
+        self.ids.date_input.text = ""
+
+
 
 class ViewExpensesScreen(MDScreen, DialogMixin):
     def __init__(self, **kwargs):

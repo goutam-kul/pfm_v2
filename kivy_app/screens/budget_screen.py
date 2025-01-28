@@ -68,6 +68,9 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
             if response.status_code == 200:
                 budgets = response.json()
                 self.display_budget_cards(budgets)
+            elif response.status_code == 404:
+                self.display_budget_cards([])
+                self.show_message("No budgets", "You have not set any budgets. Pleases create a ")
             else:
                 self.show_message("Error", f"Failed to load budget {response.status_code}")
         except Exception as e:

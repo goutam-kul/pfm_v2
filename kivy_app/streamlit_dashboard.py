@@ -26,12 +26,16 @@ def main():
     query_params = st.query_params
     user_id = query_params.get("user_id", [None])[0] if "user_id" in query_params else None
 
-    if user_id:
+    if not user_id:
+        st.error("User ID not provided in the URL parameter")
+        return
+
+    try:
         embed_url = get_metabase_embed_url(user_id=user_id)
         st.title("User Dashboard")
         st.components.v1.iframe(embed_url, height=1000)
-    else:
-        st.error("User ID not provided in the URL parameters.")
+    except Exception as e:
+        st.error(f"Failed to load dashboard: {e}")
 
 if __name__ == "__main__":
     main()
