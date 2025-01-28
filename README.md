@@ -11,7 +11,6 @@ Personal Finance Manager v2 is the successor to the original Personal Finance Ma
 ### 2. User Management
 - **User Accounts**: Users can now create their own accounts with a unique user ID and password.
 - **Login System**: Users can securely log in to their accounts.
-![User Login Demo](https://drive.google.com/file/d/1bXvUCGKTcJqNmTG_frmBZ3fa42uz3nh_/view?usp=drive_link) 
 - **Token-Based Authentication**: All API requests are secured using token-based authentication.
 - **Password Reset with OTP**: Users can reset their passwords by verifying their identity through an OTP sent to their registered email.
 
