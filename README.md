@@ -18,18 +18,27 @@ Personal Finance Manager v2 is the successor to the original Personal Finance Ma
 
 ### 3. Expense Management
 - **Add Expenses**: Users can log their expenses by providing details such as category, amount, and date.
+<br></br>
+![Add Expense Demo](https://github.com/user-attachments/assets/ad1f17cd-247a-4ae6-9c3e-0f467a411f77)
 - **View Expenses**: Users can view their logged expenses, filtered by date, category, or month.
+<br></br>
+![View Expenses Demo](https://github.com/user-attachments/assets/4624aa60-fa64-498f-a161-feb23a9589e3)
 
 ### 4. Budget Management
-- **Add Budgets**: Users can set budgets for different categories.<br></br>
-
+- **Add Budgets**: Users can set budgets for different categories.
+<br></br>
+![Add Budget Demo](https://github.com/user-attachments/assets/028d884d-3a0c-4474-8563-3601aa20aeb7)
 - **View Budgets**: Users can view their existing budgets.
+<br></br>
+![View Budgets](https://github.com/user-attachments/assets/5abb0b1d-0c6a-4440-886d-0b78addc1688)
 - **Update Budgets**: Users can modify their budgets by increasing or decreasing the allocated amount.
+<br></br>
+![Update Budget Demo](https://github.com/user-attachments/assets/5a61494c-85fa-4860-99c9-da96e21ac992)
 
-### 5. Gamification Features
-- Introduced **badges** for user achievements. For example:
-  - **Savings Sultan**: Awarded to users who save more than a predefined amount (e.g., $10,000).
-  - **Big Spender**: Awarded to users who spend more than $5,000 in a month.
+### 5. Personalized Dashboard
+- Created personalized dashboard for user's to view there financial data.
+<br></br>
+![Dashboard Demo](https://github.com/user-attachments/assets/f657b885-1ddf-4f0b-a258-7c7506d24f86)
 
 ### 6. Security Improvements
 - **Password Hashing**: All passwords are securely hashed before being stored in the database.
