@@ -1,0 +1,156 @@
+#:kivy 2.3.1
+
+<ExpenseMainScreen>:
+    name: "expense_main"
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(20)
+        padding: dp(20)
+
+        MDLabel:
+            text: "Expense Management"
+            halign: "center"
+            font_style: "H5"
+
+        GridLayout:
+            cols: 3
+            spacing: dp(10)
+            size_hint_y: None
+            height: dp(400)
+
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: "150dp", "180dp"
+                padding: dp(10)
+                md_bg_color: 0.95, 0.88, 0.77, 1  # Warm Beige Background
+                ripple_behavior: True
+                on_release: app.root.current = "add_expense"
+
+                MDLabel:
+                    text: "Add Expense"
+                    halign: "center"
+                    font_style: "H6"
+                    theme_text_color: "Primary"
+
+                MDIcon:
+                    icon: "plus-box"
+                    halign: "center"
+                    font_size: "48sp"
+                    theme_text_color: "Secondary"
+
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: "150dp", "180dp"
+                padding: dp(10)
+                md_bg_color: 0.83, 0.93, 0.88, 1  # Light Mint Green Background
+                ripple_behavior: True
+                on_release: app.root.current = "view_expenses"
+
+                MDLabel:
+                    text: "View Expenses"
+                    halign: "center"
+                    font_style: "H6"
+                    theme_text_color: "Primary"
+
+                MDIcon:
+                    icon: "file-document-outline"
+                    halign: "center"
+                    font_size: "48sp"
+                    theme_text_color: "Secondary"
+
+            MDCard:
+                orientation: "vertical"
+                size_hint: None, None
+                size: "150dp", "180dp"
+                padding: dp(10)
+                md_bg_color: 0.88, 0.86, 0.95, 1  # Lavender Background
+                ripple_behavior: True
+                on_release: app.root.current = "dashboard"
+
+                MDLabel:
+                    text: "Go to Dashboard"
+                    halign: "center"
+                    font_style: "H6"
+                    theme_text_color: "Primary"
+
+                MDIcon:
+                    icon: "view-dashboard-outline"
+                    halign: "center"
+                    font_size: "48sp"
+                    theme_text_color: "Secondary"
+
+
+<AddExpenseScreen>:
+    name: "add_expense"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(20)
+        padding: dp(20)
+
+        MDLabel:
+            text: "Add Expense"
+            halign: "center"
+            font_style: "H5"
+
+        MDTextField:
+            id: category_input
+            hint_text: "Enter Category"
+
+        MDTextField:
+            id: amount_input
+            hint_text: "Enter Amount"
+            input_filter: "float"
+
+        MDTextField:
+            id: date_input
+            hint_text: "Select Date (YYYY-MM-DD)"
+            readonly: True
+            on_focus: if self.focus: root.show_date_picker()
+
+        MDRaisedButton:
+            text: "Submit"
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                root.add_expense(
+                root.ids.category_input.text,
+                root.ids.amount_input.text,
+                root.ids.date_input.text
+                )
+                
+        MDRaisedButton:
+            text: "Go Back"
+            pos_hint: {"center_x": 0.5}
+            on_release: app.root.current = "dashboard"
+
+<ViewExpensesScreen>:
+    name: "view_expenses"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 20
+        padding: [20, 50, 20, 20]
+
+        MDLabel:
+            text: "View Expenses"
+            font_style: "H4"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: [0.2, 0.6, 0.8, 1]
+
+        MDBoxLayout:
+            orientation: "vertical"
+            id: table_container
+            size_hint: (1, 1)  # Adjust size_hint for the table container
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Center-align the container
+            spacing: 10
+
+        MDRaisedButton:
+            text: "Back"
+            size_hint: None, None
+            size: dp(100), dp(40)
+            pos_hint: {"center_x": 0.5}
+            on_release: app.root.current = "expense_main"
+

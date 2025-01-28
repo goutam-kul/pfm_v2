@@ -1,0 +1,53 @@
+#:kivy 2.3.1
+
+<HomeScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 20
+        padding: 40
+
+        MDLabel:
+            text: "Finance Manager"
+            font_style: "H4"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: [0.2, 0.6, 0.8, 1]
+
+        MDTextField:
+            id: identifier
+            hint_text: "Enter username or email"
+            helper_text: "Your unique username or email"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDTextField:
+            id: password
+            hint_text: "Password"
+            mode: "rectangle"
+            password: True
+            helper_text: "Enter your password"
+            helper_text_mode: "on_focus"
+            size_hint_x: 0.8
+            pos_hint: {"center_x": 0.5}
+
+        MDLabel:
+            id: status_label
+            text: ""
+            halign: "center"
+            theme_text_color: "Error"
+
+        MDRaisedButton:
+            text: "Login"
+            pos_hint: {"center_x": 0.5}
+            on_release: root.login_user(root.ids.identifier.text, root.ids.password.text)
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            MDRaisedButton:
+                text: "Register"
+                on_release: app.root.current = "register"
+            MDFlatButton:
+                text: "Forgot Password?"
+                on_release: app.root.current = "forgot_password"

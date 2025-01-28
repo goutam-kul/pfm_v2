@@ -19,14 +19,14 @@ conf = ConnectionConfig(
 )
 
 
-async def send_reset_email(to_email: str, reset_link: str):
+async def send_reset_email(to_email: str, email_subject: str, email_body: str):
     """
     Asynchronously send a password reset email to the specified address.
     """
     message= MessageSchema(
-        subject="Password Reset Request",
+        subject=email_subject,
         recipients=[to_email],
-        body=f"Click the link to reset your password: {reset_link}",
+        body=email_body,
         subtype="html",
     )
     try:

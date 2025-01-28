@@ -31,7 +31,8 @@ class ForgotPasswordRequest(BaseModel):
 
 # Reset Password
 class ResetPasswordRequest(BaseModel):
-    token: str
+    # token: str
+    otp: str
     new_password: str
 
 # ------------------------------------------------
@@ -41,6 +42,12 @@ class ExpenseBase(BaseModel):
     category: str
     amount: float
     date: date
+
+    @field_validator("category")
+    def validate_category(cls, value):
+        if not value or not isinstance(value, str):
+            raise ValueError("Category must be a non-empty")
+        return value
 
     @field_validator("amount")
     def validate_amount(cls, value):
@@ -76,7 +83,7 @@ class BudgetBase(BaseModel):
     @field_validator("category")
     def validate_category(cls, value):
         if not value or not isinstance(value, str):
-            raise ValueError("Category must be a non-empty string.")
+            raise ValueError("Category must be a non-empty.")
         return value
     
     @field_validator("limit")
