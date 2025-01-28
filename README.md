@@ -11,6 +11,8 @@ Personal Finance Manager v2 is the successor to the original Personal Finance Ma
 ### 2. User Management
 - **User Accounts**: Users can now create their own accounts with a unique user ID and password.
 - **Login System**: Users can securely log in to their accounts.
+<br></br>
+![User Login Demo](https://github.com/user-attachments/assets/dceffc1d-ff8f-46a1-bf4b-bae04f9c0f26)
 - **Token-Based Authentication**: All API requests are secured using token-based authentication.
 - **Password Reset with OTP**: Users can reset their passwords by verifying their identity through an OTP sent to their registered email.
 
@@ -19,7 +21,8 @@ Personal Finance Manager v2 is the successor to the original Personal Finance Ma
 - **View Expenses**: Users can view their logged expenses, filtered by date, category, or month.
 
 ### 4. Budget Management
-- **Add Budgets**: Users can set budgets for different categories.
+- **Add Budgets**: Users can set budgets for different categories.<br></br>
+
 - **View Budgets**: Users can view their existing budgets.
 - **Update Budgets**: Users can modify their budgets by increasing or decreasing the allocated amount.
 
