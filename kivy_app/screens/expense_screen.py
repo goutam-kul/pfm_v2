@@ -46,7 +46,8 @@ class AddExpenseScreen(MDScreen, DialogMixin):
                 self.show_message("Success", "Expense added successfully!")
                 self.manager.current = "expense_main"
             else:
-                self.show_message("Error", "Expense addition failed succesfully.")
+                self.show_message("Error", "Failed to add expense.")
+                self.manager.current = "expense_main"
         except Exception as e:
             self.show_message("Network Error", f"Error: {str(e)}")
 
