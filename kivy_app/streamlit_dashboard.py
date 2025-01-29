@@ -33,7 +33,7 @@ def main():
     try:
         embed_url = get_metabase_embed_url(user_id=user_id)
         st.title("User Dashboard")
-        st.components.v1.iframe(embed_url, height=1000)
+        st.components.v1.iframe(embed_url, height=1200)
     except Exception as e:
         st.error(f"Failed to load dashboard: {e}")
 
