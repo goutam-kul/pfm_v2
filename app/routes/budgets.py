@@ -1,8 +1,9 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from app.schemas import BudgetResponse, BudgetCreate, BudgetUpdateRequest
-from app.models import Budget
+from app.models import Budget, Expense
 from app import crud
 from db.database import get_db
 from utils.auth import get_current_user_id
@@ -15,9 +16,9 @@ def add_budget(
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
-    # Default month = current month if not provided 
-    if budget.month is None:
-        budget.month = datetime.now().strftime("%Y-%m")
+    # # Default month = current month if not provided 
+    # if budget.month is None:
+    #     budget.month = datetime.now().strftime("%Y-%m")
 
     # Check if budget for the category already exists
     existing_budget = (
@@ -84,3 +85,47 @@ def update_budget(
         response["warning"] = warning
     
     return response
+
+
+@router.get("/budget-warnings", response_model=dict)
+def check_budget_warnings(
+    month: str = None,
+    user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    if month is None:
+        month = datetime.now().strftime("%Y-%m")
+
+    # Get all budgets set by the user for the given month
+    budgets = db.query(Budget).filter(
+        Budget.user_id == user_id, Budget.month == month
+    ).all()
+
+    if not budgets:
+        return {"message": "No budgets set for this month."}
+
+    warnings = []
+
+    for budget in budgets:
+        # Get total expenses for the category
+        total_spent = db.query(func.sum(Expense.amount)).filter(
+            Expense.user_id == user_id,
+            Expense.category == budget.category,
+            func.to_char(Expense.date, 'YYYY-MM') == month
+        ).scalar() or 0
+
+        # Check if expenses exceed 80% of the budget limit
+        if total_spent >= 0.8 * budget.limit:
+            if total_spent >= budget.limit:
+                warnings.append(
+                    f"You have exceeded your '{budget.category}' budget for {month}. Consider adjusting your expenses."
+                )
+            else:
+                warnings.append(
+                    f"You have used {int((total_spent/budget.limit)*100)}% of your '{budget.category}' budget for {month}."
+                )
+
+    if warnings:
+        return {"warnings": warnings}
+    
+    return {"message": "You are within your budget limits for this month."}

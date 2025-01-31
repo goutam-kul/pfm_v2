@@ -35,6 +35,10 @@ class ResetPasswordRequest(BaseModel):
     otp: str
     new_password: str
 
+# Update Income 
+class UpdateIncomeRequest(BaseModel):
+    monthly_income: float
+
 # ------------------------------------------------
 
 # 2. Expense Schema
@@ -65,6 +69,7 @@ class ExpenseCreate(ExpenseBase):
     pass
 
 class ExpenseResponse(ExpenseBase):
+    subcategory: Optional[str] = None
     id: int
     user_id: int
 

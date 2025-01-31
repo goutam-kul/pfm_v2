@@ -1,0 +1,70 @@
+Monthly Expense Trend
+SELECT 
+    SUM(e.amount) as "Amount",
+    TO_CHAR(e.date, 'YYYY-MM') as "Month"
+FROM expenses e
+WHERE e.user_id = {{user_id}} AND e.date >= CURRENT_DATE - INTERVAL '1 year'
+GROUP BY "Month"
+ORDER BY "Month" ASC;
+
+----------------------------------
+Most Spent in a Day
+SELECT 
+    -- e.category as "Category",
+    e.amount as "Transaction",
+    TO_CHAR(e.date, 'YYYY-MM-DD') as "Date"
+FROM expenses e
+WHERE 
+    e.user_id = {{user_id}} 
+    AND TO_CHAR(e.date, 'YYYY-MM') = TO_CHAR(current_date, 'YYYY-MM')
+
+ORDER BY e.amount desc
+LIMIT 5;
+
+---------------------------------------------------------------
+Historical Spending analysis
+SELECT 
+    category as "Category",
+    SUM(amount) as "Total Spending"
+FROM expenses
+WHERE user_id = {{user_id}}
+GROUP BY category;
+
+-----------------------------------------------------------------
+Budget Query
+SELECT 
+    b.category AS "Category",
+    TO_CHAR(TO_DATE(b.month, 'YYYY-MM'), 'Month YYYY') AS "Month",
+    b.limit AS "Budget Limit",
+    COALESCE(SUM(e.amount), 0) AS "Used",
+    b.limit - COALESCE(SUM(e.amount), 0) AS "Remaining"
+FROM 
+    budgets b 
+LEFT JOIN 
+    expenses e
+ON 
+    b.category = e.category 
+    AND e.user_id = {{user_id}}  -- Filter parameter
+    AND TO_CHAR(e.date, 'YYYY-MM') = b.month
+WHERE 
+    b.user_id = {{user_id}}  -- Filter parameter
+    AND b.month = TO_CHAR(CURRENT_DATE, 'YYYY-MM')
+GROUP BY 
+    b.category, b.month, b.limit
+ORDER BY 
+    b.category;
+    
+---------------------------------------------------------------------
+Top - 5 Expense Categories - Current Month
+SELECT 
+    category as "Category",
+    SUM(amount) as "Total Spending"
+FROM expenses
+WHERE user_id = {{user_id}} 
+AND to_char(date, 'YYYY-MM') = to_char(current_date, 'YYYY-MM')
+GROUP BY "Category"
+ORDER BY "Total Spending" desc
+LIMIT 5;
+
+
+---------------------------------------------------------------------

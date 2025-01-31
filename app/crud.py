@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func, extract
 from app import models, schemas
+from datetime import datetime
 
 # User CRUD Operations
 def get_user(db: Session, user_id: int):
@@ -42,12 +44,31 @@ def get_expenses_by_user(db: Session, user_id: int):
 
 # Budget CRUD Operations
 def create_budget(db: Session, budget: schemas.BudgetCreate, user_id: int):
+    # Ensure budget month is correctly formatted
+    budget_month = budget.month or datetime.now().strftime("%Y-%m")
+
+    # Extract year and month separately
+    year, month = map(int, budget_month.split("-"))
+
+    # Calculate sum of past expenses for this category and month
+    past_expenses_total = (
+        db.query(func.sum(models.Expense.amount))
+        .filter(
+            models.Expense.user_id == user_id,
+            models.Expense.category == budget.category,
+            extract("year", models.Expense.date) == year,
+            extract("month", models.Expense.date) == month
+        )
+        .scalar()
+    ) or 0.0  # Default to 0 if no expenses exist
+
+    # Create the budget with the correct current_total
     db_budget = models.Budget(
         category=budget.category,
         limit=budget.limit,
-        current_total=0.0,
+        current_total=past_expenses_total,  # Now includes past expenses
         user_id=user_id,
-        month=budget.month
+        month=budget_month
     )
     db.add(db_budget)
     db.commit()

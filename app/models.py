@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, DateTime, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -10,7 +10,7 @@ class User(Base):
     username = Column(String, nullable=False, unique=True)  
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
-    # reset_token = Column(String, nullable=True) # For password reset
+    monthly_income = Column(Numeric(10, 2), nullable=False, default=0)
     reset_otp = Column(String, nullable=True)  # Password reset using otp
     otp_expiry = Column(DateTime, nullable=True)
     expenses = relationship("Expense", back_populates="user")
@@ -20,6 +20,7 @@ class Expense(Base):
     __tablename__ = "expenses"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Unique ID for each expense
     category = Column(String, nullable=False)
+    subcategory = Column(String, nullable=True)  # Optional detailed category
     amount = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Foreign key to User

@@ -151,3 +151,38 @@ def get_user_id(
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     
     return {"user_id": user_id}
+
+
+# Income endpoints 
+
+@router.put("/income", response_model=schemas.UpdateIncomeRequest)
+def update_income(
+    update_data: schemas.UpdateIncomeRequest,
+    user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    # Find the income of the user
+    update_income = crud.get_user(db=db, user_id=user_id)
+
+    # Check if the user exists
+    if not update_income:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Update the user's income with the new value
+    update_income.monthly_income = update_data.monthly_income
+
+    db.commit()
+    db.refresh(update_income)  # Updates the income object with new data
+    
+    return {"message": "Income updated successfully", "monthly_income": update_income.monthly_income}
+
+
+@router.get("/income")
+def get_income(
+    user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    income = crud.get_user(db=db, user_id=user_id)
+    return {"monthly_income": income.monthly_income}
+
+
