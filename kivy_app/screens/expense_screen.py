@@ -72,13 +72,14 @@ class ViewExpensesScreen(MDScreen, DialogMixin):
     def create_table(self):
         # Define the MDDataTable with larger size and more rows per page
         self.expense_table = MDDataTable(
-            size_hint=(1, 1),  # Larger table with 90% width and 80% height
+            size_hint=(1, 1),  
             use_pagination=True,
             rows_num=15,  # Number of entries per page
             column_data=[
                 ("Date", dp(50)),
                 ("Category", dp(50)),
                 ("Amount", dp(50)),
+                ("Sub-Category", dp(50)),
             ],
             row_data=[],  # Initially empty, populated dynamically
             elevation=2,
@@ -96,7 +97,7 @@ class ViewExpensesScreen(MDScreen, DialogMixin):
             if response.status_code == 200:
                 expenses = response.json()
                 table_data = [
-                    (expense["date"], expense["category"], str(expense["amount"]))
+                    (expense["date"], expense["category"], float(expense["amount"]), str(expense['subcategory']))
                     for expense in expenses
                 ]
                 self.expense_table.row_data = table_data  # Populate table with rows

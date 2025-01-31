@@ -75,13 +75,14 @@
             size_hint_y: None
             height: self.texture_size[1]
 
-        MDTextField:
-            id: category_input
-            hint_text: "Enter Budget Category"
-            mode: "rectangle"
+        MDRaisedButton:
+            id: category_button
+            text: "Select Budget Category"
             size_hint_x: None
             width: "300dp"
             pos_hint: {"center_x": 0.5}
+            on_release: root.show_category_menu()
+
 
         MDTextField:
             id: limit_input
@@ -107,7 +108,7 @@
             size_hint: None, None
             size: "200dp", "48dp"
             pos_hint: {"center_x": 0.5}
-            on_release: root.add_budget(category_input.text, limit_input.text)
+            on_release: root.add_budget(limit_input.text)  # Pass only limit, category is already selected
 
         MDRaisedButton:
             text: "Cancel"

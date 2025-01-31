@@ -4,16 +4,21 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.pickers import MDDatePicker
 from kivymd.uix.progressbar import MDProgressBar
 from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.menu import MDDropdownMenu
 from kivy.utils import get_color_from_hex
 from kivy.app import App
 import requests
 from kivy_app.utils import DialogMixin
+from datetime import datetime
 
 class AddBudgetScreen(MDScreen, DialogMixin):
     selected_month = None  # Store the selected month as formatter string (YYYY-MM)
+    selected_category = None  # Store the selected category
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.categories = ["Food", "Transport", "Entertainment", "Health", "Utilities", "Shopping", "Education", "Personal Care", "Travel"]
+        self.category_menu = None
 
     def show_calendar(self):
         # Open the calendar
@@ -29,10 +34,36 @@ class AddBudgetScreen(MDScreen, DialogMixin):
     def on_calendar_cancel(self, instance, value):
         self.selected_month = None
 
-    def add_budget(self, category, limit):
+    def show_category_menu(self):
+        # Create the dropdown menu for categories
+        menu_items = [
+            {
+                "text": category,
+                "viewclass": "OneLineListItem",
+                "on_release": lambda x=category: self.set_category(x),
+            } for category in self.categories
+        ]
+        self.category_menu = MDDropdownMenu(
+            caller=self.ids.category_button,
+            items=menu_items,
+            width_mult=4,
+        )
+        self.category_menu.open()
+
+    def set_category(self, category):
+        # Set the selected category and update the button text
+        self.selected_category = category
+        self.ids.category_button.text = category
+        self.category_menu.dismiss()
+
+    def add_budget(self, limit):
+        if not self.selected_category:
+            self.show_message("Error", "Please select a category")
+            return
+
         url = "http://127.0.0.1:6000/budgets/"
         payload = {
-            "category": category.strip(),
+            "category": self.selected_category.strip(),
             "limit": float(limit),
         }
 
@@ -56,12 +87,13 @@ class AddBudgetScreen(MDScreen, DialogMixin):
 class ViewBudgetScreen(MDScreen, DialogMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.selected_view = "current"  # Default view mode
 
     def on_enter(self):
         self.load_budgets()
 
     def load_budgets(self):
-        url = "http://127.0.0.1:6000/budgets/"  # Replace with your API endpoint
+        url = "http://127.0.0.1:6000/budgets/"
         headers = {"Authorization": f"Bearer {self.manager.access_token}"}
         try:
             response = requests.get(url, headers=headers)
@@ -70,23 +102,34 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
                 self.display_budget_cards(budgets)
             elif response.status_code == 404:
                 self.display_budget_cards([])
-                self.show_message("No budgets", "You have not set any budgets. Pleases create a ")
+                self.show_message("No budgets", "You have not set any budgets. Please create one.")
             else:
-                self.show_message("Error", f"Failed to load budget {response.status_code}")
+                self.show_message("Error", f"Failed to load budgets {response.status_code}")
         except Exception as e:
-            self.show_message("Network Error", f"Error: {(str(e))}")
+            self.show_message("Network Error", f"Error: {str(e)}")
 
     def display_budget_cards(self, budgets):
         container = self.ids.budget_container
         container.clear_widgets()
 
-        # Add the "Add Budget" card 
+        # Get the current month in YYYY-MM format
+        current_month = datetime.now().strftime("%Y-%m")
+
+        # Filter budgets based on selected view mode
+        if self.selected_view == "current":
+            budgets = [b for b in budgets if b["month"] == current_month]
+        elif self.selected_view == "past":
+            budgets = [b for b in budgets if b["month"] < current_month]
+        elif self.selected_view == "future":
+            budgets = [b for b in budgets if b["month"] > current_month]
+
+        # Add "Add Budget" card
         add_budget_card = MDCard(
             orientation="vertical",
             padding="12dp",
             size_hint=(None, None),
             size=("280dp", "180dp"),
-            md_bg_color=get_color_from_hex("#E0F7FA"),  # Soft pastel color
+            md_bg_color=get_color_from_hex("#E0F7FA"),
             on_release=self.go_to_add_budget
         )
         add_budget_card.add_widget(MDIconButton(
@@ -102,6 +145,7 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
         ))
         container.add_widget(add_budget_card)
 
+        # Add filtered budget cards
         for budget in budgets:
             card = BudgetCard(
                 category=budget["category"],
@@ -110,6 +154,31 @@ class ViewBudgetScreen(MDScreen, DialogMixin):
                 month=budget["month"]
             )
             container.add_widget(card)
+
+                # Toggle Card to switch views
+        toggle_card = MDCard(
+            orientation="vertical",
+            padding="12dp",
+            size_hint=(None, None),
+            size=("280dp", "80dp"),
+            md_bg_color=get_color_from_hex("#E0F7FA"),
+            on_release=self.toggle_view
+        )
+        toggle_card.add_widget(MDLabel(
+            text=f"Viewing: {self.selected_view.capitalize()} Budgets",
+            font_style="H6",
+            halign="center",
+            theme_text_color="Primary"
+        ))
+        container.add_widget(toggle_card)
+        
+
+    def toggle_view(self, *args):
+        """Toggle between current, past, and future budgets."""
+        views = ["current", "past", "future"]
+        current_index = views.index(self.selected_view)
+        self.selected_view = views[(current_index + 1) % len(views)]
+        self.load_budgets()  # Reload budgets with the new filter
 
     def go_to_add_budget(self, *args):
         self.manager.current = "add_budget"
